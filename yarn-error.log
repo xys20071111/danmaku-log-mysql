@@ -1,0 +1,44 @@
+Arguments: 
+  /home/xys/.nvm/versions/node/v17.2.0/bin/node /home/xys/.yarn/bin/yarn.js add -D @types/node @types/node-mysql @types/ws
+
+PATH: 
+  /home/xys/.yarn/bin:/home/xys/.config/yarn/global/node_modules/.bin:/home/xys/.deno/bin:/home/xys/.nvm/versions/node/v17.2.0/bin:/home/xys/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/xys/.local/bin:/home/xys/.local/pspdev/bin:/home/xys/.cargo/bin
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  17.2.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: https://registry.npm.taobao.org/@types%2fnode-mysql: [NOT_FOUND] @types/node-mysql not found
+      at Request.params.callback [as _callback] (/home/xys/.yarn/lib/cli.js:66138:18)
+      at Request.self.callback (/home/xys/.yarn/lib/cli.js:140883:22)
+      at Request.emit (node:events:390:28)
+      at Request.<anonymous> (/home/xys/.yarn/lib/cli.js:141855:10)
+      at Request.emit (node:events:390:28)
+      at Gunzip.<anonymous> (/home/xys/.yarn/lib/cli.js:141777:12)
+      at Object.onceWrapper (node:events:509:28)
+      at Gunzip.emit (node:events:390:28)
+      at endReadableNT (node:internal/streams/readable:1343:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "danmaku-log-mysql",
+    "version": "0.1.0",
+    "description": "弹幕机器人插件-将弹幕记录到数据库里",
+    "main": "dist/index.js",
+    "author": "xys20071111",
+    "license": "MIT",
+    "private": false
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
