@@ -19,7 +19,7 @@ interface Message {
 }
 
 const config: IConfig = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
-const db = mysql.createConnection({
+let db = mysql.createConnection({
 	host: config.host,
 	port: config.port,
 	user: config.username,
@@ -28,7 +28,19 @@ const db = mysql.createConnection({
 	
 });
 
-db.query('CREATE TABLE IF NOT EXISTS`log` ( `id` INT NOT NULL AUTO_INCREMENT , `time` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP , `roomId` INT NOT NULL , `uid` INT NOT NULL , `nickname` VARCHAR(255) NOT NULL , `text` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;');
+db.on('error', () => {
+	console.log('[弹幕日志插件] 与数据库连接断开，正在重连')
+	db =  mysql.createConnection({
+		host: config.host,
+		port: config.port,
+		user: config.username,
+		password: config.password,
+		database: config.db,
+		
+	});
+})
+
+db.query('CREATE TABLE IF NOT EXISTS`log` ( `id` INT NOT NULL AUTO_INCREMENT , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `roomId` INT NOT NULL , `uid` INT NOT NULL , `nickname` VARCHAR(255) NOT NULL , `text` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;');
 const danmaku = new WebSocket(`ws://127.0.0.1:${config.apiPort}`)
 const APIMsgHandler = new EventEmitter();
 
