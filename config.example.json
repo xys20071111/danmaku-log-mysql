@@ -1,0 +1,9 @@
+{
+	"apiPort": 7894,
+	"username": "danmakuLog",
+	"password": "abc123",
+	"host": "127.0.0.1",
+	"port": 3306,
+	"db": "danmakuLog",
+	"token": "陈睿，柠檬熟了"
+}
