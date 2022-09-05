@@ -42,6 +42,8 @@ db.on('error', () => {
 
 db.query('CREATE TABLE IF NOT EXISTS`log` ( `id` INT NOT NULL AUTO_INCREMENT , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `roomId` INT NOT NULL , `uid` INT NOT NULL , `nickname` VARCHAR(255) NOT NULL , `text` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;');
 let danmaku = new WebSocket(`ws://127.0.0.1:${config.apiPort}`)
+const APIMsgHandler = new EventEmitter();
+
 function registerCallback() {
 	danmaku.on('message', (rawData: string) => {
 		try {
@@ -63,7 +65,7 @@ function registerCallback() {
 		registerCallback()
 	})
 }
-const APIMsgHandler = new EventEmitter();
+registerCallback()
 
 APIMsgHandler.on('AUTH', (result: string) => {
 	if (result === 'AUTHED') {

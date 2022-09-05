@@ -26,17 +26,30 @@ db.on('error', () => {
     });
 });
 db.query('CREATE TABLE IF NOT EXISTS`log` ( `id` INT NOT NULL AUTO_INCREMENT , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `roomId` INT NOT NULL , `uid` INT NOT NULL , `nickname` VARCHAR(255) NOT NULL , `text` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;');
-const danmaku = new ws_1.WebSocket(`ws://127.0.0.1:${config.apiPort}`);
+let danmaku = new ws_1.WebSocket(`ws://127.0.0.1:${config.apiPort}`);
+function registerCallback() {
+    danmaku.on('message', (rawData) => {
+        try {
+            const msg = JSON.parse(rawData);
+            APIMsgHandler.emit(msg.cmd, msg.data);
+        }
+        catch (e) {
+            console.log(e);
+        }
+    });
+    danmaku.on('open', () => {
+        danmaku.send(JSON.stringify({ cmd: "AUTH", data: config.token }));
+    });
+    danmaku.on('error', () => {
+        danmaku = new ws_1.WebSocket(`ws://127.0.0.1:${config.apiPort}`);
+        registerCallback();
+    });
+    danmaku.on('close', () => {
+        danmaku = new ws_1.WebSocket(`ws://127.0.0.1:${config.apiPort}`);
+        registerCallback();
+    });
+}
 const APIMsgHandler = new events_1.EventEmitter();
-danmaku.on('message', (rawData) => {
-    try {
-        const msg = JSON.parse(rawData);
-        APIMsgHandler.emit(msg.cmd, msg.data);
-    }
-    catch (e) {
-        console.log(e);
-    }
-});
 APIMsgHandler.on('AUTH', (result) => {
     if (result === 'AUTHED') {
         danmaku.send(JSON.stringify({ cmd: "ROOMID", data: config.token }));
@@ -50,7 +63,4 @@ APIMsgHandler.on('ROOMID', (roomId) => {
     APIMsgHandler.on('DANMU_MSG', (data) => {
         db.query('INSERT INTO `log`(`roomId` ,`uid`, `nickname`, `text`) VALUES(?, ?, ?, ?)', [roomId, data[2][0], data[2][1], data[1]]);
     });
-});
-danmaku.on('open', () => {
-    danmaku.send(JSON.stringify({ cmd: "AUTH", data: config.token }));
 });
