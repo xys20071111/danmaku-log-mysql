@@ -8,25 +8,29 @@ const events_1 = require("events");
 const mysql_1 = __importDefault(require("mysql"));
 const ws_1 = require("ws");
 const config = JSON.parse(fs_1.default.readFileSync(process.argv[2], 'utf8'));
-let db = mysql_1.default.createConnection({
+let db = mysql_1.default.createPool({
     host: config.host,
     port: config.port,
     user: config.username,
     password: config.password,
     database: config.db,
+    connectionLimit: 20
 });
-db.on('error', () => {
+const reconnectFunction = () => {
     console.log('[弹幕日志插件] 与数据库连接断开，正在重连');
-    db = mysql_1.default.createConnection({
+    db = mysql_1.default.createPool({
         host: config.host,
         port: config.port,
         user: config.username,
         password: config.password,
         database: config.db,
     });
-});
+};
+db.on('error', reconnectFunction);
+db.on('close', reconnectFunction);
 db.query('CREATE TABLE IF NOT EXISTS`log` ( `id` INT NOT NULL AUTO_INCREMENT , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `roomId` INT NOT NULL , `uid` INT NOT NULL , `nickname` VARCHAR(255) NOT NULL , `text` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;');
 let danmaku = new ws_1.WebSocket(`ws://127.0.0.1:${config.apiPort}`);
+const APIMsgHandler = new events_1.EventEmitter();
 function registerCallback() {
     danmaku.on('message', (rawData) => {
         try {
@@ -49,7 +53,7 @@ function registerCallback() {
         registerCallback();
     });
 }
-const APIMsgHandler = new events_1.EventEmitter();
+registerCallback();
 APIMsgHandler.on('AUTH', (result) => {
     if (result === 'AUTHED') {
         danmaku.send(JSON.stringify({ cmd: "ROOMID", data: config.token }));
