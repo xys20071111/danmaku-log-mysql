@@ -28,7 +28,7 @@ const reconnectFunction = () => {
 };
 db.on('error', reconnectFunction);
 db.on('close', reconnectFunction);
-db.query('CREATE TABLE IF NOT EXISTS`log` ( `id` INT NOT NULL AUTO_INCREMENT , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `roomId` INT NOT NULL , `uid` INT NOT NULL , `nickname` VARCHAR(255) NOT NULL , `text` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;');
+db.query('CREATE TABLE IF NOT EXISTS`log` ( `id` INT NOT NULL AUTO_INCREMENT , `time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `roomId` INT NOT NULL , `uid` BIGINT UNSIGNED NOT NULL , `nickname` VARCHAR(255) NOT NULL , `text` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;');
 let danmaku = new ws_1.WebSocket(`ws://127.0.0.1:${config.apiPort}`);
 const APIMsgHandler = new events_1.EventEmitter();
 function registerCallback() {
